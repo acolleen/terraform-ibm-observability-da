@@ -12,7 +12,7 @@ locals {
   at_cos_target_bucket_name   = var.prefix != null ? "${var.prefix}-${var.at_cos_target_bucket_name}" : var.at_cos_target_bucket_name
 
   cos_instance_crn            = var.existing_cos_instance_crn != null ? var.existing_cos_instance_crn : module.cos_instance[0].cos_instance_crn
-  existing_kms_guid           = var.existing_kms_instance_crn != null ? element(split(":", var.existing_kms_instance_crn), length(split(":", var.existing_kms_instance_crn)) - 3) : length(local.bucket_config_map) == 2 ? null : tobool("The CRN of the existing KMS is not provided.")
+  existing_kms_guid           = var.existing_kms_instance_crn != null ? element(split(":", var.existing_kms_instance_crn), length(split(":", var.existing_kms_instance_crn)) - 3) : length(local.bucket_config_map) == 2 ? null : tobool("The CRN of the existing key management service (KMS) is not provided.")
   cos_instance_guid           = var.existing_cos_instance_crn == null ? module.cos_instance[0].cos_instance_guid : element(split(":", var.existing_cos_instance_crn), length(split(":", var.existing_cos_instance_crn)) - 3)
   archive_cos_bucket_name     = var.existing_log_archive_cos_bucket_name != null ? var.existing_log_archive_cos_bucket_name : module.cos_bucket[0].buckets[local.log_archive_cos_bucket_name].bucket_name
   archive_cos_bucket_endpoint = var.existing_log_archive_cos_bucket_endpoint != null ? var.existing_log_archive_cos_bucket_endpoint : module.cos_bucket[0].buckets[local.log_archive_cos_bucket_name].s3_endpoint_private
@@ -184,7 +184,7 @@ resource "ibm_iam_authorization_policy" "policy" {
   target_service_name         = local.kms_service
   target_resource_instance_id = local.existing_kms_guid
   roles                       = ["Reader"]
-  description                 = "Allow the COS instance with GUID ${local.cos_instance_guid} reader access to the kms_service instance GUID ${local.existing_kms_guid}"
+  description                 = "Assign the Cloud Object Storage instance with GUID ${local.cos_instance_guid} reader access to the kms_service instance GUID ${local.existing_kms_guid}."
 }
 
 module "cos_instance" {
